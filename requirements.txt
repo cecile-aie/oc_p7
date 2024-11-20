@@ -1,7 +1,7 @@
-Flask==2.3.3 # app
+Flask # app
 # requirements du modèle
-mlflow==2.17.0
-torch==2.4.1
-transformers==4.46.0
-pandas==2.2.2
-numpy==1.26.4
+mlflow
+# torch==2.4.1
+# transformers==4.46.0
+pandas
+numpy
