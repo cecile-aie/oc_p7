@@ -1,7 +1,7 @@
 Flask # app
 # requirements du modèle
 mlflow
-# torch==2.4.1
-# transformers==4.46.0
+torch==2.4.1
+transformers==4.46.0
 pandas
 numpy
