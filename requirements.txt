@@ -1,7 +1,9 @@
-Flask # app
-# requirements du modèle
-mlflow
-torch==2.4.1
-transformers==4.46.0
-pandas
-numpy
+mlflow==2.17.0
+cloudpickle==2.2.1
+nltk==3.9.1
+numpy==1.23.5
+psutil==5.9.0
+scikit-learn==1.4.2
+scipy==1.11.4
+Flask
+azure-storage-blob
