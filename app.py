@@ -50,6 +50,17 @@ def home():
     if request.method == "POST":
         text_input = request.form.get("text")
         feedback = request.form.get("feedback")
+        
+        # Si le bouton "Signaler comme incorrect" est cliqué
+        if feedback == "incorrect":
+            return render_template(
+                "index.html",
+                sentiment=None,  # Réinitialise les valeurs affichées
+                input_text=None,
+                translated_text=None,
+                feedback_received=True,
+            )
+        
         if text_input:
             try:
                 # Traduire le texte en anglais
@@ -60,16 +71,12 @@ def home():
                 predictions = model.predict(input_data)
                 sentiment = "Positif" if predictions[0] == 0 else "Négatif"
 
-                # Si l'utilisateur donne un feedback négatif, remonter l'information
-                if feedback == "incorrect":
-                    log_incorrect_prediction(translated_text, sentiment)
-
                 return render_template(
                     "index.html",
                     sentiment=sentiment,
                     input_text=text_input,
                     translated_text=translated_text,
-                    feedback_received=True,
+                    feedback_received=False,
                 )
             except Exception as e:
                 return render_template("index.html", error=f"Erreur : {str(e)}")
