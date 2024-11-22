@@ -10,6 +10,6 @@ azure-storage-blob
 gunicorn
 deep-translator
 # suivi dans Azure Application Insight
-# azure-monitor-opentelemetry-exporter
-# opentelemetry-api
-# opentelemetry-sdk
+azure-monitor-opentelemetry-exporter
+opentelemetry-api
+opentelemetry-sdk
