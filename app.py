@@ -11,7 +11,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from datetime import datetime, timedelta
 
 # Azure Application Insights settings
-INSTRUMENTATION_KEY = "c4e21572-3bd8-45bd-9c1f-3e17dee1f785"
+INSTRUMENTATION_KEY = "2c2d3438-4d5d-4ccf-a563-ef4e41d37c61"
 
 # Configurer OpenTelemetry pour Application Insights
 provider = TracerProvider()

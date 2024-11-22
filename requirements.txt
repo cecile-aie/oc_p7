@@ -11,5 +11,5 @@ gunicorn
 deep-translator
 # suivi dans Azure Application Insight
 azure-monitor-opentelemetry-exporter
-opentelemetry-api==1.14.0
-opentelemetry-sdk==1.14.0
+opentelemetry-api
+opentelemetry-sdk
