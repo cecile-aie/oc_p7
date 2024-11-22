@@ -1,3 +1,9 @@
+import pandas as pd
+from flask import Flask, request, render_template, jsonify
+import os
+import mlflow.pyfunc
+from deep_translator import GoogleTranslator
+
 # Chemin vers le stockage monté
 LOCAL_MODEL_PATH = "/mnt/azureblob"
 
