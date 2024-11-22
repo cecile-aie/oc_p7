@@ -27,6 +27,16 @@
             {% endif %}
             <h4>Sentiment prédit :</h4>
             <p><strong>{{ sentiment }}</strong></p>
+
+            <form method="POST" class="mt-3">
+                <input type="hidden" name="text" value="{{ input_text }}">
+                <input type="hidden" name="feedback" value="incorrect">
+                <button type="submit" class="btn btn-warning">Signaler comme incorrect</button>
+            </form>
+        </div>
+        {% elif feedback_received %}
+        <div class="mt-4 alert alert-success">
+            <p>Merci pour votre retour !</p>
         </div>
         {% elif error %}
         <div class="mt-4 alert alert-danger">
