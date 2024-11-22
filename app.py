@@ -11,7 +11,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from datetime import datetime, timedelta
 
 # Azure Application Insights settings
-INSTRUMENTATION_KEY = "de465162-5a4c-4b6c-a519-a857aab7caf1"
+INSTRUMENTATION_KEY = "c4e21572-3bd8-45bd-9c1f-3e17dee1f785"
 
 # Configurer OpenTelemetry pour Application Insights
 provider = TracerProvider()
@@ -43,6 +43,13 @@ def translate_to_english(text):
         # Si une erreur survient, retourner le texte original
         print(f"Erreur lors de la traduction : {e}")
         return text
+    
+@app.route("/test_logging")
+def test_logging():
+    with tracer.start_as_current_span("TestLog") as span:
+        span.set_attribute("message", "Ceci est un test de journalisation.")
+        span.set_attribute("timestamp", datetime.utcnow().isoformat())
+    return "Test de journalisation effectué."
 
 # Page d'accueil avec un formulaire pour soumettre des phrases
 @app.route("/", methods=["GET", "POST"])
