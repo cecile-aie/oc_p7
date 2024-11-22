@@ -19,8 +19,12 @@
 
         {% if sentiment %}
         <div class="mt-4">
-            <h4>Phrase soumise : </h4>
+            <h4>Phrase soumise :</h4>
             <p><strong>{{ input_text }}</strong></p>
+            {% if translated_text %}
+            <h4>Traduction en anglais :</h4>
+            <p><strong>{{ translated_text }}</strong></p>
+            {% endif %}
             <h4>Sentiment prédit :</h4>
             <p><strong>{{ sentiment }}</strong></p>
         </div>

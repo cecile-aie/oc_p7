@@ -8,3 +8,4 @@ scipy==1.11.4
 Flask
 azure-storage-blob
 gunicorn
+deep-translator

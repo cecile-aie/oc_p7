@@ -2,6 +2,7 @@ import pandas as pd
 from flask import Flask, request, render_template, jsonify
 import os
 import mlflow.pyfunc
+from deep_translator import GoogleTranslator
 
 # Chemin vers le stockage monté
 LOCAL_MODEL_PATH = "/mnt/azureblob"
@@ -18,17 +19,33 @@ model = load_model()
 # Initialiser Flask
 app = Flask(__name__)
 
+# Fonction pour traduire le texte en anglais
+def translate_to_english(text):
+    return GoogleTranslator(source='auto', target='en').translate(text)
+
 # Page d'accueil avec un formulaire pour soumettre des phrases
 @app.route("/", methods=["GET", "POST"])
 def home():
     if request.method == "POST":
         text_input = request.form.get("text")
         if text_input:
-            # Effectuer la prédiction avec le modèle
-            input_data = pd.DataFrame([{"text": text_input}])
-            predictions = model.predict(input_data)
-            sentiment = "Positif" if predictions[0] == 0 else "Négatif"
-            return render_template("index.html", sentiment=sentiment, input_text=text_input)
+            try:
+                # Traduire le texte en anglais
+                translated_text = translate_to_english(text_input)
+                
+                # Effectuer la prédiction avec le modèle
+                input_data = pd.DataFrame([{"text": translated_text}])
+                predictions = model.predict(input_data)
+                sentiment = "Positif" if predictions[0] == 0 else "Négatif"
+                
+                return render_template(
+                    "index.html", 
+                    sentiment=sentiment, 
+                    input_text=text_input, 
+                    translated_text=translated_text
+                )
+            except Exception as e:
+                return render_template("index.html", error=f"Erreur : {str(e)}")
         else:
             return render_template("index.html", error="Veuillez entrer une phrase.")
     return render_template("index.html")
@@ -38,9 +55,20 @@ def home():
 def predict():
     try:
         data = request.get_json()
-        input_data = pd.DataFrame([data])
+        original_text = data.get("text", "")
+        
+        # Traduire le texte en anglais
+        translated_text = translate_to_english(original_text)
+        
+        # Effectuer la prédiction
+        input_data = pd.DataFrame([{"text": translated_text}])
         predictions = model.predict(input_data)
-        return jsonify({"prediction": predictions.tolist()})
+        
+        return jsonify({
+            "original_text": original_text,
+            "translated_text": translated_text,
+            "prediction": predictions.tolist()
+        })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
