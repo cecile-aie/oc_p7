@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 
 # Récupérer la chaîne de connexion depuis les variables d'environnement
 CONNECTION_STRING = os.environ.get("APPLICATIONINSIGHTS_CONNECTION_STRING")
-# CONNECTION_STRING = "InstrumentationKey=b176799a-6d1c-4923-ad31-b7e0ab857108;IngestionEndpoint=https://francecentral-1.in.applicationinsights.azure.com/;LiveEndpoint=https://francecentral.livediagnostics.monitor.azure.com/;ApplicationId=4083bf6d-47c7-43e8-8d2a-543213a320c9"
+CONNECTION_STRING = "InstrumentationKey=b176799a-6d1c-4923-ad31-b7e0ab857108;IngestionEndpoint=https://francecentral-1.in.applicationinsights.azure.com/;LiveEndpoint=https://francecentral.livediagnostics.monitor.azure.com/;ApplicationId=4083bf6d-47c7-43e8-8d2a-543213a320c9"
 if not CONNECTION_STRING:
     raise EnvironmentError("La variable d'environnement APPLICATIONINSIGHTS_CONNECTION_STRING est manquante.")
 
@@ -53,6 +53,19 @@ def home():
     if request.method == "POST":
         text_input = request.form.get("text")
         feedback = request.form.get("feedback")
+
+         # Vérifier si le texte dépasse la limite de taille
+        MAX_TEXT_LENGTH = 500  
+        if text_input and len(text_input) > MAX_TEXT_LENGTH:
+                        return render_template(
+                "index.html",
+                error="Le texte est trop long. Veuillez entrer un texte de moins de 500 caractères.",
+                sentiment=None,
+                input_text=None,
+                translated_text=None,
+                feedback_received=False
+            )
+        
         if text_input:
             try:
                 # Traduire le texte en anglais
