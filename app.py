@@ -10,19 +10,15 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from datetime import datetime, timedelta
 
-# Azure Application Insights settings
-# INSTRUMENTATION_KEY = ""
-# Récupérer la clé d'instrumentation depuis les variables d'environnement
-INSTRUMENTATION_KEY = os.environ.get("APPINSIGHTS_INSTRUMENTATIONKEY")
-CONNECTION_STRING = os.environ.get("APPLICATIONINSIGHTS_CONNECTION_STRING")
-if not INSTRUMENTATION_KEY:
-    raise EnvironmentError("La variable d'environnement APPINSIGHTS_INSTRUMENTATIONKEY est manquante.")
+# Récupérer la chaîne de connexion depuis les variables d'environnement
+# CONNECTION_STRING = os.environ.get("APPLICATIONINSIGHTS_CONNECTION_STRING")
+CONNECTION_STRING = "InstrumentationKey=b176799a-6d1c-4923-ad31-b7e0ab857108;IngestionEndpoint=https://francecentral-1.in.applicationinsights.azure.com/;LiveEndpoint=https://francecentral.livediagnostics.monitor.azure.com/;ApplicationId=4083bf6d-47c7-43e8-8d2a-543213a320c9"
 if not CONNECTION_STRING:
     raise EnvironmentError("La variable d'environnement APPLICATIONINSIGHTS_CONNECTION_STRING est manquante.")
 
 # Configurer OpenTelemetry pour Application Insights
 provider = TracerProvider()
-exporter = AzureMonitorTraceExporter(connection_string=f"InstrumentationKey={INSTRUMENTATION_KEY}")
+exporter = AzureMonitorTraceExporter(connection_string=CONNECTION_STRING)
 provider.add_span_processor(BatchSpanProcessor(exporter))
 trace.set_tracer_provider(provider)
 tracer = trace.get_tracer(__name__)
