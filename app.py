@@ -14,9 +14,11 @@ from datetime import datetime, timedelta
 # INSTRUMENTATION_KEY = ""
 # Récupérer la clé d'instrumentation depuis les variables d'environnement
 INSTRUMENTATION_KEY = os.environ.get("APPINSIGHTS_INSTRUMENTATIONKEY")
+CONNECTION_STRING = os.environ.get("APPLICATIONINSIGHTS_CONNECTION_STRING")
 if not INSTRUMENTATION_KEY:
     raise EnvironmentError("La variable d'environnement APPINSIGHTS_INSTRUMENTATIONKEY est manquante.")
-
+if not CONNECTION_STRING:
+    raise EnvironmentError("La variable d'environnement APPLICATIONINSIGHTS_CONNECTION_STRING est manquante.")
 
 # Configurer OpenTelemetry pour Application Insights
 provider = TracerProvider()
