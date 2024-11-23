@@ -3,16 +3,20 @@ from flask import Flask, request, render_template, jsonify
 import os
 import mlflow.pyfunc
 from deep_translator import GoogleTranslator
+# from azure.monitor.opentelemetry.exporter import AzureMonitorExporter
 from azure.monitor.opentelemetry.exporter import AzureMonitorTraceExporter
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
-from datetime import datetime
+from datetime import datetime, timedelta
 
+# Azure Application Insights settings
+# INSTRUMENTATION_KEY = ""
 # Récupérer la clé d'instrumentation depuis les variables d'environnement
 INSTRUMENTATION_KEY = os.environ.get("APPINSIGHTS_INSTRUMENTATIONKEY")
 if not INSTRUMENTATION_KEY:
     raise EnvironmentError("La variable d'environnement APPINSIGHTS_INSTRUMENTATIONKEY est manquante.")
+
 
 # Configurer OpenTelemetry pour Application Insights
 provider = TracerProvider()
@@ -45,30 +49,12 @@ def translate_to_english(text):
         print(f"Erreur lors de la traduction : {e}")
         return text
 
-@app.route("/test_logging")
-def test_logging():
-    with tracer.start_as_current_span("TestLog") as span:
-        span.set_attribute("message", "Ceci est un test de journalisation.")
-        span.set_attribute("timestamp", datetime.utcnow().isoformat())
-    return "Test de journalisation effectué."
-
 # Page d'accueil avec un formulaire pour soumettre des phrases
 @app.route("/", methods=["GET", "POST"])
 def home():
     if request.method == "POST":
         text_input = request.form.get("text")
         feedback = request.form.get("feedback")
-        
-        # Si le bouton "Signaler comme incorrect" est cliqué
-        if feedback == "incorrect":
-            return render_template(
-                "index.html",
-                sentiment=None,  # Réinitialise les valeurs affichées
-                input_text=None,
-                translated_text=None,
-                feedback_received=True,
-            )
-        
         if text_input:
             try:
                 # Traduire le texte en anglais
@@ -79,12 +65,23 @@ def home():
                 predictions = model.predict(input_data)
                 sentiment = "Positif" if predictions[0] == 0 else "Négatif"
 
+                # Si l'utilisateur donne un feedback négatif, remonter l'information
+                if feedback == "incorrect":
+                    log_incorrect_prediction(translated_text, sentiment)
+                    return render_template(
+                        "index.html",
+                        sentiment=None,  # Réinitialise les valeurs affichées
+                        input_text=None,
+                        translated_text=None,
+                        feedback_received=True,
+                    )
+
                 return render_template(
                     "index.html",
                     sentiment=sentiment,
                     input_text=text_input,
                     translated_text=translated_text,
-                    feedback_received=False,
+                    feedback_received=True,
                 )
             except Exception as e:
                 return render_template("index.html", error=f"Erreur : {str(e)}")
