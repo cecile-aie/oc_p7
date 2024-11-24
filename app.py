@@ -11,8 +11,8 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from datetime import datetime, timedelta
 
 # Récupérer la chaîne de connexion depuis les variables d'environnement
-CONNECTION_STRING = os.environ.get("APPLICATIONINSIGHTS_CONNECTION_STRING")
-CONNECTION_STRING = "InstrumentationKey=b176799a-6d1c-4923-ad31-b7e0ab857108;IngestionEndpoint=https://francecentral-1.in.applicationinsights.azure.com/;LiveEndpoint=https://francecentral.livediagnostics.monitor.azure.com/;ApplicationId=4083bf6d-47c7-43e8-8d2a-543213a320c9"
+CONNECTION_STRING = os.environ.get("APPLICATIONINSIGHTS_TWEETALERT_CONNECTION_STRING")
+CONNECTION_STRING = "InstrumentationKey=5a00bef8-0580-4949-8eea-c680062c02f3;IngestionEndpoint=https://francecentral-1.in.applicationinsights.azure.com/;LiveEndpoint=https://francecentral.livediagnostics.monitor.azure.com/;ApplicationId=0e10c5a3-cfd1-436d-934e-7ecaf50ce308"
 if not CONNECTION_STRING:
     raise EnvironmentError("La variable d'environnement APPLICATIONINSIGHTS_CONNECTION_STRING est manquante.")
 
