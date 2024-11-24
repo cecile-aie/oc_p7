@@ -3,6 +3,16 @@ from flask import Flask, request, render_template, jsonify
 import os
 import mlflow.pyfunc
 from deep_translator import GoogleTranslator
+from opencensus.ext.azure.log_exporter import AzureLogHandler
+import logging
+from datetime import datetime
+
+# Configuration du logger pour Application Insights
+instrumentation_key = "4071129e-e96b-494a-b0c7-24e6dac41b18"  
+logger = logging.getLogger(__name__)
+logger.addHandler(AzureLogHandler(connection_string=f"InstrumentationKey={instrumentation_key}"))
+logger.setLevel(logging.INFO)
+
 
 # Chemin vers le stockage monté
 LOCAL_MODEL_PATH = "/mnt/azureblob"
@@ -27,15 +37,17 @@ def translate_to_english(text):
         # Si une erreur survient, retourner le texte original
         print(f"Erreur lors de la traduction : {e}")
         return text
-    
-# Fonction pour remonter la prédiction incorrecte
-# def log_incorrect_prediction(text, sentiment):
-#     """Enregistre les prédictions incorrectes dans Azure Application Insights."""
-#     with tracer.start_as_current_span("IncorrectPrediction") as span:
-#         span.set_attribute("text", text)
-#         span.set_attribute("predicted_sentiment", sentiment)
-#         span.set_attribute("timestamp", datetime.utcnow().isoformat())
 
+def log_incorrect_prediction(translated_text, sentiment):
+    logger.info(
+        "Prédiction incorrecte signalée",
+        extra={
+            "custom_dimensions": {  
+                "translated_text": translated_text,
+                "sentiment": sentiment
+            }
+        }
+    )
 
 # Page d'accueil avec un formulaire pour soumettre des phrases
 @app.route("/", methods=["GET", "POST"])
@@ -68,7 +80,7 @@ def home():
                 
                 # Si l'utilisateur donne un feedback négatif, remonter l'information
                 if feedback == "incorrect":
-#                    log_incorrect_prediction(translated_text, sentiment)
+                    log_incorrect_prediction(translated_text, sentiment)
                     return render_template(
                         "index.html",
                         sentiment=None,  # Réinitialise les valeurs affichées
@@ -85,6 +97,7 @@ def home():
                     feedback_received=True,
                 )
             except Exception as e:
+                logger.error(f"Erreur : {e}")
                 return render_template("index.html", error=f"Erreur : {str(e)}")
         else:
             return render_template("index.html", error="Veuillez entrer une phrase.")
